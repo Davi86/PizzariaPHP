@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+
+	<meta charset="utf-8">
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="https://code.jquery.com/resources/demos/style.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+
+            function limpa_formulário_cep() {
+                // Limpa valores do formulário de cep.
+                $("#rua").val("");
+                $("#bairro").val("");
+                $("#cidade").val("");
+                $("#uf").val("");
+                $("#ibge").val("");
+            }
+            
+            //Quando o campo cep perde o foco.
+            $("#cep").blur(function() {
+
+                //Nova variável "cep" somente com dígitos.
+                var cep = $(this).val().replace(/\D/g, '');
+
+                //Verifica se campo cep possui valor informado.
+                if (cep != "") {
+
+                    //Expressão regular para validar o CEP.
+                    var validacep = /^[0-9]{8}$/;
+
+                    //Valida o formato do CEP.
+                    if(validacep.test(cep)) {
+
+                        //Preenche os campos com "..." enquanto consulta webservice.
+                        $("#rua").val("...");
+                        $("#bairro").val("...");
+                        $("#cidade").val("...");
+                        $("#uf").val("...");
+                        $("#ibge").val("...");
+
+                        //Consulta o webservice viacep.com.br/
+                        $.getJSON("https://viacep.com.br/ws/"+ cep +"/json/?callback=?", function(dados) {
+
+                            if (!("erro" in dados)) {
+                                //Atualiza os campos com os valores da consulta.
+                                $("#rua").val(dados.logradouro);
+                                $("#bairro").val(dados.bairro);
+                                $("#cidade").val(dados.localidade);
+                                $("#uf").val(dados.uf);
+                                
+                            } //end if.
+                            else {
+                                //CEP pesquisado não foi encontrado.
+                                limpa_formulário_cep();
+                                alert("CEP não encontrado.");
+                            }
+                        });
+                    } //end if.
+                    else {
+                        //cep é inválido.
+                        limpa_formulário_cep();
+                        alert("Formato de CEP inválido.");
+                    }
+                } //end if.
+                else {
+                    //cep sem valor, limpa formulário.
+                    limpa_formulário_cep();
+                    alert('Algum Campo está Vazio, verifique se você preencheu tudo corretamente!')
+                }
+            });
+        });
+	</script>
+</head>
+<body>
+
+
+	<h5>Insira seus Dados:</h5>
+
+      <form method="get" action="." id="formu">
+        <label style="font-size: 15px;"> Seu Nome:
+        <input type="text" name="nome" style="width: 150px;" size="60" id="nome"><br>
+        <label style="font-size: 15px;"> Telefone:
+        <input type="text" name="nome" style="width: 150px;" size="60" id="tel"><br>
+        <label style="font-size: 15px;">Cep:
+        <input style="width: 150px;" name="cep" type="text" id="cep" value="" size="10" maxlength="9" /></label><br />
+        <label style="font-size: 15px;">Rua:
+        <input style="width: auto;" name="rua" type="text" id="rua" size="60" /></label><br />
+        <label style="font-size: 15px;">Número Residência:
+        <input style="width: 150px;" name="numero" type="text" id="numeroR" size="60" /></label><br />
+        <label style="font-size: 15px;">Bairro:
+        <input style="width: 150px;" name="bairro" type="text" id="bairro" size="40" /></label><br />
+        <label style="font-size: 15px;">Cidade:
+        <input style="width: 150px;" name="cidade" type="text" id="cidade" size="40" /></label><br />
+        <label style="font-size: 15px;">Estado:
+        <input style="width: 150px;" name="uf" type="text" id="uf" size="2" /></label><br />
+        
+      </form>
+    </div>
+
+</body>
+</html>
